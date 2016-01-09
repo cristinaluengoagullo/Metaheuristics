@@ -1,0 +1,32 @@
+
+#ifndef SAMPLEDECODER_HPP
+#define SAMPLEDECODER_HPP
+
+#include <list>
+#include <vector>
+#include <algorithm>
+#include "ProblemInstance.hpp"
+#include "ProblemInstance.inlines.hpp"
+
+using namespace std;
+
+typedef vector<vector<int> > matrix;
+
+class SampleDecoder {
+public:
+	SampleDecoder(ProblemInstance& p);
+
+	~SampleDecoder();
+
+	double decode(const std::vector< double >& chromosome) const;
+
+private:
+
+  ProblemInstance& p;
+
+  int greedyCost(int o, int c) const;
+
+  int solutionCost(const matrix& solution) const;
+};
+
+#endif

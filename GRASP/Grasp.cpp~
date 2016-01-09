@@ -1,0 +1,200 @@
+#include "Grasp.hpp"
+
+Grasp::Grasp(ProblemInstance& _p) : p(_p), d(_p.getDemmands()), used(p.getNCenters(),false), sortedCenters(p.getSortedCenters()), totalFixedCost(0) {
+  nStore.resize(p.getNOffices());
+}
+
+matrix Grasp::grasp() {
+  matrix solution(p.getNOffices(),vector<int>(p.getNCenters()));
+  int optCost;
+  for(int i = 0; i < MAX_ITER; i++) {
+    solution = constructivePhase();
+    if(not solution.size()) {
+      cout << endl << "No solution found! " << endl << endl;
+      return solution;
+    }
+    matrix solutionLocal = localSearchPhase(solution);
+    int costConstructive = solutionCost(solution);
+    int costLocal = solutionCost(solutionLocal);
+    if(costConstructive > costLocal) {
+      solution = solutionLocal;
+      optCost = costLocal;
+    }
+    else optCost = costConstructive;
+  }
+  cout << endl << "* Optimal cost = " << optCost << " *" << endl << endl;
+  return solution;
+}
+
+matrix Grasp::constructivePhase() {
+  matrix solution(p.getNOffices(),vector<int>(p.getNCenters(),0));
+  for(int o = 0; o < p.getNOffices(); o++) nStore[o] = vector<int>(p.getNCenters(),0);
+  for(int i = 0; i < d.size(); i++) d[i] = p.getDemmand(i)*2;
+  candidatesInitialization();
+  while(rcl.size() > 0) {
+    int i = 0; 
+    int max = 0, min = numeric_limits<int>::max();
+    vector<int> costs(rcl.size());
+    set<int>::iterator it;
+    for(it = rcl.begin(); it != rcl.end(); it++) {
+      int gCost = greedyCost(*it,solution);
+      if(gCost == -1) 
+	return vector<vector<int> >();
+      if(gCost > max) max = gCost;
+      if(gCost < min) min = gCost;
+      
+      costs[i] = gCost;
+      i++;
+    }
+    int cost = min + 0.5*(max-min); 
+    i = 0;
+    for(it = rcl.begin(); it != rcl.end(); it++) {
+      if(costs[i] > cost) {
+	it = rcl.erase(it);
+	it--;
+      }
+      else i++;
+    }
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_int_distribution<int> rand(0,rcl.size()-1);
+    int r = rand(mt);
+    i = 0;
+    for(it = rcl.begin(); it != rcl.end() and i < r; it++) i++;
+    if(i > 0) it--; 
+    solution[*it] = vector<int>(nStore[*it]);
+    for(int c : solution[*it]) {
+      if(solution[*it][c] > 0 and not used[c]) {
+	used[c] = true;
+	totalFixedCost += p.getFixedCost(c);
+      }
+    }
+    rcl.erase(it);
+  }
+  return solution;
+}
+
+void Grasp::candidatesInitialization() {
+  for(int o = 0; o < p.getNOffices(); o++) 
+    rcl.insert(o);
+}
+
+int Grasp::greedyCost(int o, const matrix& solution) {
+  int cost = numeric_limits<int>::max();
+  for(int i = 0; i < sortedCenters.size(); i++) {
+    int c = sortedCenters[i];
+    if(not d[o]) break;
+    if(p.connectionAllowed(c,o)) {
+      int totalStored = 0;
+      for(int o = 0; o < p.getNOffices(); o++) 
+	totalStored += solution[o][c];
+      int demmand = p.getDemmand(o);
+      if(d[o] < demmand) demmand = d[o]; 
+      int data = totalStored + demmand;
+      if(data > p.getCapacity(c)) {
+	data = p.getCapacity(c);
+	demmand = p.getCapacity(c) - totalStored;
+      }
+      d[o] -= demmand;
+      int fixedCost = totalFixedCost;
+      if(not used[c]) fixedCost += p.getFixedCost(c);
+      cost = data*p.getSegmentCost(data) + fixedCost;
+      nStore[o][c] += demmand;
+    }
+  }
+  if(d[o]) return -1;
+  return cost;
+}
+
+matrix Grasp::localSearchPhase(const matrix& solution) {
+  pair<int,matrix> neighbor = findBestNeighbor(solution);
+  while(neighbor.first > 0) {
+    neighbor = findBestNeighbor(neighbor.second);
+  }
+  return neighbor.second;
+}
+
+pair<int,matrix> Grasp::findBestNeighbor(const matrix& solution) {
+  matrix neighbor(solution);
+  int origCost = solutionCost(solution);
+  for(int o1 = 0; o1 < p.getNOffices(); o1++) {
+    // Simulacro de q los centros en los q esta conectado desaparece su demanda
+    // y ver si se puede cubrir la demanda de la oficina en cuestion con esos centros
+    // (a los q se pueda conectar teniendo en cuenta q la otra oficina ya no esta)
+    // Que tengan almenos un centro diferente.
+    for(int o2 = 0; o2 < p.getNOffices(); o2++) {
+      if(o1 != o2) {
+	cout << " //////////////" << "Office " << o1 << " and " << o2 << " //////////////" << endl;
+	bool atLeastOneDiff = false;
+	int free1 = 0, free2 = 0;
+	for(int c = 0; c < p.getNCenters(); c++) {
+	  cout << "    Center " << c << endl;
+	  if(not(solution[o1][c] > 0 and solution[o2][c] > 0)) 
+	    atLeastOneDiff = true;
+	  int totalStored = 0;
+	  for(int o = 0; o < p.getNOffices(); o++) 
+	    totalStored += solution[o][c];
+	  cout << "      Total stored = " << totalStored << endl;
+	  if(p.connectionAllowed(c,o1)) {
+	    free1 += p.getCapacity(c) - totalStored;
+	    if(solution[o2][c] > 0) free1 += solution[o2][c];
+	  }
+	  if(p.connectionAllowed(c,o2)) {
+	    free2 += p.getCapacity(c) - totalStored;
+	    if(solution[o1][c] > 0) free2 += solution[o1][c];
+	  }
+	  cout << "      Free1 = " << free1 << endl;
+	  cout << "      Free2 = " << free2 << endl;
+	}
+	if(free1 > p.getDemmand(o1) and free2 > p.getDemmand(o2) and atLeastOneDiff) {
+	  d[o1] = p.getDemmand(o1)*2;
+	  d[o2] = p.getDemmand(o2)*2;
+	  for(int i = 0; i < sortedCenters.size(); i++) {
+	    int c = sortedCenters[i];
+	    if(not d[o1] and not d[o2]) {
+	      neighbor[o1] = nStore[o1];
+	      neighbor[o2] = nStore[o2];
+	      break;
+	    }
+	    if(p.connectionAllowed(c,o1)) {
+	      nStore[o1][c] = 0;
+	      int totalStored = 0;
+	      for(int o = 0; o < p.getNOffices(); o++) {
+		totalStored += solution[o][c];
+		if(solution[o2][c] > 0) totalStored -= solution[o2][c];
+	      }
+	      int demmand = p.getDemmand(o1);
+	      if(d[o1] < demmand) demmand = d[o1]; 
+	      int data = totalStored + demmand;
+	      if(data > p.getCapacity(c)) {
+		data = p.getCapacity(c);
+		demmand = p.getCapacity(c) - totalStored;
+	      }
+	      d[o1] -= demmand;
+	      nStore[o1][c] += demmand;
+	    }
+	  }
+	  int neighborCost = solutionCost(neighbor); 
+	  if(neighborCost < origCost) 
+	    return make_pair(neighborCost,neighbor);
+	}
+      }
+    }
+  }
+  int neighborCost = solutionCost(neighbor); 
+  if(neighborCost == origCost) neighborCost = -1;
+  return make_pair(neighborCost,neighbor);
+}
+
+int Grasp::solutionCost(const matrix& solution) const {
+  int totalFixed = 0;
+  int totalStored = 0;
+  for(int c = 0; c < p.getNCenters(); c++) {
+    int stored = 0;
+    for(int o = 0 ; o < p.getNOffices(); o++) 
+      stored += solution[o][c];
+    totalStored += stored*p.getSegmentCost(stored);
+    if(stored > 0) totalFixed += p.getFixedCost(c);
+  }
+  return totalStored + totalFixed;
+}
