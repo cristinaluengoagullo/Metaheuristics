@@ -28,10 +28,11 @@ private:
   matrix nStore;
   vector<int> d;
   set<int> rcl;
+  set<int> candidates;
   vector<bool> used;
   vector<int> sortedCenters;
   int totalFixedCost;
-  const int MAX_ITER = 3;
+  const int MAX_ITER = 1;
 
   void candidatesInitialization();
 

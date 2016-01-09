@@ -83,7 +83,7 @@ int showUsageMessage(const char* arg0) {
 }
 
 void processTestFile(string filename) {
-  cout << endl << "**************** " << filename << " ****************" << endl << endl;
+  cout << endl << "*********** " << filename << " ***********" << endl << endl;
   ifstream file(filename);
   if(file.is_open()) {
     int nOffices, nCenters;
@@ -103,9 +103,9 @@ void processTestFile(string filename) {
       for(int c = 0; c < sol[o].size(); c++) {
 	cout << "    Center " << c << " (" << k[c] << " PBs) : " << sol[o][c] << " PBs" << endl;
       }
-      cout << "------------------------------" << endl;
+      cout << "--------------------------------------" << endl << endl;
     }
-    cout << "*******************************************" << endl;
+    cout << endl << "******************************************" << endl << endl;
   }
   else cout << "Unable to open file"; 
 }
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
     // Run all tests
     int n = stoi(argv[2]);
     for(int i = 1; i <= n; i ++) {
-      processTestFile("../Tests/MH/test" + to_string(i) + ".dat");
+      processTestFile("../Tests/test" + to_string(i) + ".dat");
     }
   }
   else if(not strcmp(argv[1],"-s")) {

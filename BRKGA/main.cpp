@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
     // Run all tests
     int n = stoi(argv[2]);
     for(int i = 1; i <= n; i ++) {
-      processTestFile("Tests/MH/test" + to_string(i) + ".dat");
+      processTestFile("Tests/test" + to_string(i) + ".dat");
     }
   }
   else if(not strcmp(argv[1],"-s")) {
