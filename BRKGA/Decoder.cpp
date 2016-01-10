@@ -63,12 +63,9 @@ int Decoder::solutionCost(const matrix& solution) const {
     int stored = 0;
     for(int o = 0 ; o < p.getNOffices(); o++) 
       stored += solution[o][c];
-    cout << "Center " << c << ", stored = " << stored << ", Fixed cost = " << p.getFixedCost(c) << endl;
     totalStored += stored*p.getSegmentCost(stored);
     if(stored > 0) totalFixed += p.getFixedCost(c);
   }
-  //cout << "totalStored = " << totalStored << endl;
-  //cout << "totalFixed = " << totalFixed << endl;
   return totalStored + totalFixed;
 }
 
