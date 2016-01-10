@@ -5,7 +5,6 @@ inline ProblemInstance::ProblemInstance(const vector<int> _d, const vector<int> 
   f = _f;
   s = _s;
   m = _m;
-  sort(f.begin(),f.end());
 }
 
 inline ProblemInstance::ProblemInstance(const ProblemInstance& p) {

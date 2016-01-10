@@ -30,7 +30,6 @@ for n in range(1,nCenters+1):
 instanceOPL.write("k = [" + k + "];\n");
 instanceMH.write("k " + k + ". \n");
 
-maxDemmand = 0;
 d = "";
 for n in range(1,nOffices+1):
     r = random.randint(1,maxCapacity/2);
@@ -54,7 +53,7 @@ for n in range(1,nSegments+1):
 instanceOPL.write("s = [" + s + "];\n");
 instanceMH.write("s " + s + ".\n");
 
-i = maxDemmand/nSegments;
+i = maxCapacity/nSegments;
 j = 1;
 m = "";
 for n in range(1,nSegments+1):

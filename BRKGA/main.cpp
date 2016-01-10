@@ -130,11 +130,11 @@ void processTestFile(string filename) {
       matrix sol = decoder.getBestFit();
       cout << endl << "* Optimal cost = " << algorithm.getBestFitness() << " *" << endl << endl;
       for(int o = 0; o < sol.size(); o++) {
-	/*cout << "---------- Office " << o << " (" << d[o] << " PBs) ----------" << endl;
+	cout << "---------- Office " << o << " (" << d[o] << " PBs) ----------" << endl;
 	for(int c = 0; c < sol[o].size(); c++) {
 	  cout << "    Center " << c << " (" << k[c] << " PBs) : " << sol[o][c] << " PBs" << endl;
 	}
-	cout << "------------------------------" << endl;*/
+	cout << "------------------------------" << endl;
       }
     }	
     cout << "*******************************************" << endl;
@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
     // Run all tests
     int n = stoi(argv[2]);
     for(int i = 1; i <= n; i ++) {
-      processTestFile("Tests/test" + to_string(i) + ".dat");
+      processTestFile("../Tests/test" + to_string(i) + ".dat");
     }
   }
   else if(not strcmp(argv[1],"-s")) {
