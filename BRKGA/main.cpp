@@ -7,6 +7,8 @@
 
 using namespace std;
 
+//#define DEBUG
+
 void parseInput(ifstream& file, int& nOffices, int& nCenters, vector<int>& d, vector<int>& k, vector<int>& f, vector<int>& s, vector<int>& m, vector<vector<bool> >& u) {
   string sAct, sAnt; 
   u.push_back(vector<bool>());
@@ -129,13 +131,15 @@ void processTestFile(string filename) {
     else {
       matrix sol = decoder.getBestFit();
       cout << endl << "* Optimal cost = " << algorithm.getBestFitness() << " *" << endl << endl;
-      /*for(int o = 0; o < sol.size(); o++) {
+      #ifdef DEBUG
+      for(int o = 0; o < sol.size(); o++) {
 	cout << "---------- Office " << o << " (" << d[o] << " PBs) ----------" << endl;
 	for(int c = 0; c < sol[o].size(); c++) {
 	  cout << "    Center " << c << " (" << k[c] << " PBs) : " << sol[o][c] << " PBs" << endl;
 	}
 	cout << "------------------------------" << endl;
-	}*/
+      }
+      #endif
     }	
     cout << "*******************************************" << endl;
   }
