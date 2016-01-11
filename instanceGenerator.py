@@ -5,8 +5,8 @@ import random
 instanceOPL = open("testOPL.dat", 'w')
 instanceMH = open("testMH.dat", 'w')
 
-nOffices = 8;
-nCenters = 16;
+nOffices = 100;
+nCenters = 200;
 nSegments = 1;
 
 line = "nOffices = " + str(nOffices) + ";\n";
@@ -30,12 +30,16 @@ for n in range(1,nCenters+1):
 instanceOPL.write("k = [" + k + "];\n");
 instanceMH.write("k " + k + ". \n");
 
-d = "";
-for n in range(1,nOffices+1):
+r = random.randint(1,maxCapacity/2);
+d = str(r) + " ";
+minDemmand = d;
+for n in range(1,nOffices):
     r = random.randint(1,maxCapacity/2);
     if r > maxCapacity:
         maxCapacity = r;
     d += str(r) + " ";
+    if(r < minDemmand):
+        minDemmand = r;
 instanceOPL.write("d = [" + d + "];\n");
 instanceMH.write("d " + d + ". \n");
 
@@ -53,21 +57,28 @@ for n in range(1,nSegments+1):
 instanceOPL.write("s = [" + s + "];\n");
 instanceMH.write("s " + s + ".\n");
 
-i = maxCapacity/nSegments;
-j = 1;
 m = "";
 for n in range(1,nSegments+1):
-    m += str(i*j) + " ";
-    j += 1;
+    m += str((minDemmand/2)*n) + " ";
 instanceOPL.write("m = [" + m + "];\n");
 instanceMH.write("m " + m + ".\n");
 
 uOPL = "u = [";
 uMH = "u ";
-for n in range(1,nCenters+1):
+subu = [[0 for x in range(0,nCenters)] for y in range(0,nOffices)];
+for n in range(0,nOffices) :
+    indexs = range(0,nCenters);
+    i = nCenters;
+    while (i > nCenters/4):
+        r = random.randint(0,len(indexs)-1);
+        subu[n][indexs[r]] = 1;
+        indexs.pop(r);
+        i -= 1;
+
+for n in range(0,nCenters):
     uOPL += "[";
-    for m in range(1,nOffices+1):
-        r = random.randint(0,1);
+    for m in range(0,nOffices):
+        r = subu[m][n];
         uOPL += str(r) + " ";
         uMH += str(r) + " ";
     uOPL += "]";

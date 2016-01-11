@@ -63,6 +63,7 @@ int Decoder::solutionCost(const matrix& solution) const {
     int stored = 0;
     for(int o = 0 ; o < p.getNOffices(); o++) 
       stored += solution[o][c];
+    if(p.getSegmentCost(stored) < 0) return numeric_limits<int>::max();
     totalStored += stored*p.getSegmentCost(stored);
     if(stored > 0) totalFixed += p.getFixedCost(c);
   }

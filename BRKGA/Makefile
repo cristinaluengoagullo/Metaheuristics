@@ -6,7 +6,7 @@ OBJECTS= Decoder.o
 # Targets:
 all: main
 
-main: $(OBJECTS)
+main: main.cpp $(OBJECTS)
 	$(CPP) $(CFLAGS) $(OBJECTS) main.cpp -o main
         
 Decoder.o: Decoder.cpp

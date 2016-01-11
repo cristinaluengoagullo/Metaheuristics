@@ -98,13 +98,13 @@ void processTestFile(string filename) {
     ProblemInstance p (d,k,f,s,m,u);
     Grasp g(p);
     matrix sol = g.grasp();
-    for(int o = 0; o < sol.size(); o++) {
+    /*for(int o = 0; o < sol.size(); o++) {
       cout << "---------- Office " << o << " (" << d[o] << " PBs) ----------" << endl;
       for(int c = 0; c < sol[o].size(); c++) {
 	cout << "    Center " << c << " (" << k[c] << " PBs) : " << sol[o][c] << " PBs" << endl;
       }
       cout << "--------------------------------------" << endl << endl;
-    }
+      }*/
     cout << endl << "******************************************" << endl << endl;
   }
   else cout << "Unable to open file"; 

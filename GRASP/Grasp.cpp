@@ -23,6 +23,7 @@ matrix Grasp::grasp() {
     else optCost = costConstructive;
   }
   cout << endl << "* Optimal cost = " << optCost << " *" << endl << endl;
+  //cout << endl << "* Optimal cost = " << solutionCost(solution) << " *" << endl << endl;
   return solution;
 }
 
@@ -101,6 +102,7 @@ int Grasp::greedyCost(int o, const matrix& solution) {
       d[o] -= demmand;
       int fixedCost = totalFixedCost;
       if(not used[c]) fixedCost += p.getFixedCost(c);
+      if(p.getSegmentCost(data) < 0) return -1;
       cost = data*p.getSegmentCost(data) + fixedCost;
       nStore[o][c] += demmand;
     }
@@ -113,11 +115,10 @@ int Grasp::greedyCost(int o, const matrix& solution) {
 matrix Grasp::localSearchPhase(const matrix& solution) {
   pair<int,matrix> aux = findBestNeighbor(solution);
   pair<int,matrix> neighbor;
-  while(neighbor.first >= 0) {
+  while(aux.first >= 0) {
     neighbor = findBestNeighbor(aux.second);
+    aux = neighbor;
   }
-  if(neighbor.first < 0)
-    return aux.second;
   return neighbor.second;
 }
 
@@ -205,8 +206,9 @@ pair<int,matrix> Grasp::findBestNeighbor(const matrix& solution) {
 	  }
 	}
 	int neighborCost = solutionCost(neighbor); 
-	if(neighborCost < origCost) 
+	if(neighborCost < origCost) {
 	  return make_pair(neighborCost,neighbor);
+	}
       }
     }
   }

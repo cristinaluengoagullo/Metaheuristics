@@ -57,7 +57,7 @@ inline int ProblemInstance::getFixedCost(int c) const {
 }
   
 inline int ProblemInstance::getSegmentCost(int pbs) const {
-  int cost = s[0];
+  int cost = -1;
   for(int i = 0; i < s.size(); i++) {
     if(pbs >= m[i]) {
       cost = s[i];
