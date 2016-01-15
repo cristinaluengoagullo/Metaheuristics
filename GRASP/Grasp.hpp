@@ -32,11 +32,14 @@ private:
   vector<bool> used;
   vector<int> sortedCenters;
   int totalFixedCost;
+  vector<int> orders; 
   const int MAX_ITER = 1;
 
   void candidatesInitialization();
 
   int greedyCost(int o, const matrix& solutionConstructive);
+
+  int getAmountFreeSpace(int c, int totalStored, int o1, int o2, const matrix& solution);
 
   pair<int,matrix> findBestNeighbor(const matrix& solution);
 

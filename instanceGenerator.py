@@ -5,8 +5,8 @@ import random
 instanceOPL = open("testOPL.dat", 'w')
 instanceMH = open("testMH.dat", 'w')
 
-nOffices = 100;
-nCenters = 200;
+nOffices = 200;
+nCenters = 400;
 nSegments = 1;
 
 line = "nOffices = " + str(nOffices) + ";\n";
@@ -15,15 +15,15 @@ line = "no " + str(nOffices) + "\n";
 instanceMH.write(line);
 line = "nCenters = " + str(nCenters) + ";\n";
 instanceOPL.write(line);
-line = "nc " + str(nCenters) + "\n";
+line = "nc " + str(nCenters) + " .\n";
 instanceMH.write(line);
 line = "nSegments = " + str(nSegments) + ";\n";
 instanceOPL.write(line);
 
 maxCapacity = 0;
 k = "";
-for n in range(1,nCenters+1):
-    r = random.randint(1,10);
+for n in range(0,nCenters):
+    r = random.randint(1,50);
     if r > maxCapacity:
         maxCapacity = r;
     k += str(r) + " ";
@@ -35,8 +35,6 @@ d = str(r) + " ";
 minDemmand = d;
 for n in range(1,nOffices):
     r = random.randint(1,maxCapacity/2);
-    if r > maxCapacity:
-        maxCapacity = r;
     d += str(r) + " ";
     if(r < minDemmand):
         minDemmand = r;
@@ -44,21 +42,21 @@ instanceOPL.write("d = [" + d + "];\n");
 instanceMH.write("d " + d + ". \n");
 
 f = "";
-for n in range(1,nCenters+1):
+for n in range(0,nCenters):
     r = random.randint(1,20);
     f += str(r) + " ";
 instanceOPL.write("f = [" + f + "];\n");
 instanceMH.write("f " + f + ". \n");
 
 s = "";
-for n in range(1,nSegments+1):
+for n in range(0,nSegments):
     r = random.randint(1,20);
     s += str(r) + " ";
 instanceOPL.write("s = [" + s + "];\n");
 instanceMH.write("s " + s + ".\n");
 
-m = "";
-for n in range(1,nSegments+1):
+m = "0 ";
+for n in range(1,nSegments):
     m += str((minDemmand/2)*n) + " ";
 instanceOPL.write("m = [" + m + "];\n");
 instanceMH.write("m " + m + ".\n");
@@ -82,7 +80,7 @@ for n in range(0,nCenters):
         uOPL += str(r) + " ";
         uMH += str(r) + " ";
     uOPL += "]";
-    if (n != nCenters) :
+    if (n != nCenters-1) :
         uMH += ", ";
 uOPL += "];\n";
 uMH += ". ";

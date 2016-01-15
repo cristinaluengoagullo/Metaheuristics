@@ -100,7 +100,7 @@ void processTestFile(string filename) {
     //printParameters(nOffices,nCenters,d,k,f,s,m,u);
     ProblemInstance prob (d,k,f,s,m,u);
     const unsigned n = nCenters; // size of chromosomes
-    const unsigned p = 100;	// size of population
+    const unsigned p = 80;	// size of population
     const double pe = 0.20;		// fraction of population to be the elite-set
     const double pm = 0.10;		// fraction of population to be replaced by mutants
     const double rhoe = 0.70;	// probability that offspring inherit an allele from elite parent
@@ -118,7 +118,7 @@ void processTestFile(string filename) {
     unsigned generation = 0;		// current generation
     const unsigned X_INTVL = 100;	// exchange best individuals at every 100 generations
     const unsigned X_NUMBER = 2;	// exchange top 2 best
-    const unsigned MAX_GENS = 1000;	// run for 1000 gens
+    const unsigned MAX_GENS = 100;	// run for 1000 gens
     do {
       algorithm.evolve();	// evolve the population for one generation
 		
