@@ -118,20 +118,16 @@ int Grasp::greedyCost(int o, const matrix& solution) {
 }
 
 matrix Grasp::localSearchPhase(const matrix& solution) {
-  pair<int,matrix> aux = findBestNeighbor(solution);
-  if(not aux.first) return aux.second;
-  pair<int,matrix> neighbor;
-  int nNoImprovement = 0;
-  int bestCost = numeric_limits<int>::max();
-  // Comentar lo del improvement
-  while(aux.first >= 0 and nNoImprovement < 2) {
-    neighbor = findBestNeighbor(aux.second);
-    aux = neighbor;
-    if(aux.first < bestCost)
-      bestCost = aux.first;
-    if(neighbor.first >= bestCost) 
-      nNoImprovement++;
+  pair<int,matrix> neighbor = findBestNeighbor(solution);
+  while(neighbor.first < 0) {
+    neighbor = findBestNeighbor(neighbor.second);
   }
+  /*if(not neighbor->first) return neighbor->second;
+  while(aux->first >= 0) {
+     pair<int,matrix>* aux = findBestNeighbor(neighbor.second);
+     aux = neighbor;
+  }
+  return bestSol.second;*/
   return neighbor.second;
 }
 
@@ -139,8 +135,8 @@ pair<int,matrix> Grasp::findBestNeighbor(const matrix& solution) {
   vector<vector<bool> > processed(p.getNOffices(),vector<bool>(p.getNOffices(),false));
   matrix neighbor(solution);
   int origCost = solutionCost(solution);
-  for(int i = 0; i < p.getNOffices(); i++) {
-    for(int j = 0; j < p.getNOffices(); j++) {
+  for(int i = 0; i < p.getNOffices()-1; i++) {
+    for(int j = i+1; j < p.getNOffices(); j++) {
       int o1 = i, o2 = j;
       if(orders[i] < orders[j]) {
 	o1 = j;
@@ -154,16 +150,16 @@ pair<int,matrix> Grasp::findBestNeighbor(const matrix& solution) {
 	nStore[o1] = vector<int>(p.getNCenters(),0);
 	nStore[o2] = vector<int>(p.getNCenters(),0);
 	for(int i = 0; i < sortedCenters.size(); i++) {
-	  int c = sortedCenters[i];
-	  int totalStored = 0;
+	  int c = sortedCenters[i];	  int totalStored = 0;
 	  int demmand = p.getDemmand(o1);
 	  if(not d[o1] and not d[o2]) {
 	    break;
 	  }
+	  for(int o = 0; o < p.getNOffices(); o++) {
+	    if(o != o1 and o != o2) totalStored += nStore[o][c];
+	  }
+	  int storedFromO1 = 0;
 	  if(p.connectionAllowed(c,o1)) {
-	    for(int o = 0; o < p.getNOffices(); o++) {
-	      if(o != o1 and o != o2) totalStored += nStore[o][c];
-	    }
 	    demmand = p.getDemmand(o1);
 	    if(d[o1] < demmand) demmand = d[o1]; 
 	    int data = totalStored + demmand;
@@ -173,9 +169,10 @@ pair<int,matrix> Grasp::findBestNeighbor(const matrix& solution) {
 	    }
 	    d[o1] -= demmand;
 	    nStore[o1][c] += demmand;
+	    storedFromO1 = demmand;
 	  }
 	  if(p.connectionAllowed(c,o2)) {
-	    totalStored += demmand;
+	    totalStored += storedFromO1;
 	    demmand = p.getDemmand(o2);
 	    if(d[o2] < demmand) demmand = d[o2]; 
 	    int data = totalStored + demmand;
